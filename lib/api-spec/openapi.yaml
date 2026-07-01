@@ -268,6 +268,110 @@ paths:
         "404":
           description: Not found
 
+  /monthly-goals:
+    get:
+      operationId: listMonthlyGoals
+      tags: [monthly-goals]
+      summary: List monthly goals
+      parameters:
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: year
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of monthly goals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthlyGoal"
+    post:
+      operationId: createMonthlyGoal
+      tags: [monthly-goals]
+      summary: Create a monthly goal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MonthlyGoalInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyGoal"
+
+  /monthly-goals/{id}:
+    patch:
+      operationId: updateMonthlyGoal
+      tags: [monthly-goals]
+      summary: Update a monthly goal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MonthlyGoalUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyGoal"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteMonthlyGoal
+      tags: [monthly-goals]
+      summary: Delete a monthly goal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /monthly-goals/{id}/toggle:
+    patch:
+      operationId: toggleMonthlyGoal
+      tags: [monthly-goals]
+      summary: Toggle monthly goal completion
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Toggled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyGoal"
+
   /settings:
     get:
       operationId: getSettings
@@ -467,6 +571,69 @@ components:
           type: string
         jeeAdvancedDate:
           type: string
+
+    MonthlyGoal:
+      type: object
+      required: [id, title, subject, month, year, priority, completed, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        subject:
+          type: string
+        month:
+          type: integer
+        year:
+          type: integer
+        priority:
+          type: string
+          enum: [low, medium, high]
+        completed:
+          type: boolean
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    MonthlyGoalInput:
+      type: object
+      required: [title, month, year]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        subject:
+          type: string
+        month:
+          type: integer
+        year:
+          type: integer
+        priority:
+          type: string
+          enum: [low, medium, high]
+        notes:
+          type: string
+
+    MonthlyGoalUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        subject:
+          type: string
+        month:
+          type: integer
+        year:
+          type: integer
+        priority:
+          type: string
+          enum: [low, medium, high]
+        completed:
+          type: boolean
+        notes:
+          type: ["string", "null"]
 
     DashboardSummary:
       type: object

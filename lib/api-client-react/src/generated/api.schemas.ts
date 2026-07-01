@@ -167,6 +167,68 @@ export interface SettingsUpdate {
   jeeAdvancedDate?: string;
 }
 
+export type MonthlyGoalPriority = typeof MonthlyGoalPriority[keyof typeof MonthlyGoalPriority];
+
+
+export const MonthlyGoalPriority = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+} as const;
+
+export interface MonthlyGoal {
+  id: number;
+  title: string;
+  subject: string;
+  month: number;
+  year: number;
+  priority: MonthlyGoalPriority;
+  completed: boolean;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export type MonthlyGoalInputPriority = typeof MonthlyGoalInputPriority[keyof typeof MonthlyGoalInputPriority];
+
+
+export const MonthlyGoalInputPriority = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+} as const;
+
+export interface MonthlyGoalInput {
+  /** @minLength 1 */
+  title: string;
+  subject?: string;
+  month: number;
+  year: number;
+  priority?: MonthlyGoalInputPriority;
+  notes?: string;
+}
+
+export type MonthlyGoalUpdatePriority = typeof MonthlyGoalUpdatePriority[keyof typeof MonthlyGoalUpdatePriority];
+
+
+export const MonthlyGoalUpdatePriority = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+} as const;
+
+export interface MonthlyGoalUpdate {
+  /** @minLength 1 */
+  title?: string;
+  subject?: string;
+  month?: number;
+  year?: number;
+  priority?: MonthlyGoalUpdatePriority;
+  completed?: boolean;
+  /** @nullable */
+  notes?: string | null;
+}
+
 export interface DashboardSummary {
   todayTasks: Task[];
   upcomingTests: Test[];
@@ -206,5 +268,10 @@ search?: string;
  * Only upcoming tests
  */
 upcoming?: boolean;
+};
+
+export type ListMonthlyGoalsParams = {
+month: number;
+year: number;
 };
 

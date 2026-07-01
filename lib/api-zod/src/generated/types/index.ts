@@ -8,8 +8,15 @@
 
 export * from './dashboardSummary';
 export * from './healthStatus';
+export * from './listMonthlyGoalsParams';
 export * from './listTasksParams';
 export * from './listTestsParams';
+export * from './monthlyGoal';
+export * from './monthlyGoalInput';
+export * from './monthlyGoalInputPriority';
+export * from './monthlyGoalPriority';
+export * from './monthlyGoalUpdate';
+export * from './monthlyGoalUpdatePriority';
 export * from './settings';
 export * from './settingsTheme';
 export * from './settingsUpdate';

@@ -254,6 +254,119 @@ export const DeleteTestResponse = zod.void()
 
 
 /**
+ * @summary List monthly goals
+ */
+export const ListMonthlyGoalsQueryParams = zod.object({
+  "month": zod.coerce.number(),
+  "year": zod.coerce.number()
+})
+
+export const ListMonthlyGoalsResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "subject": zod.string(),
+  "month": zod.number(),
+  "year": zod.number(),
+  "priority": zod.enum(['low', 'medium', 'high']),
+  "completed": zod.boolean(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const ListMonthlyGoalsResponse = zod.array(ListMonthlyGoalsResponseItem)
+
+
+/**
+ * @summary Create a monthly goal
+ */
+
+
+
+export const CreateMonthlyGoalBody = zod.object({
+  "title": zod.string().min(1),
+  "subject": zod.string().optional(),
+  "month": zod.number(),
+  "year": zod.number(),
+  "priority": zod.enum(['low', 'medium', 'high']).optional(),
+  "notes": zod.string().optional()
+})
+
+export const CreateMonthlyGoalResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "subject": zod.string(),
+  "month": zod.number(),
+  "year": zod.number(),
+  "priority": zod.enum(['low', 'medium', 'high']),
+  "completed": zod.boolean(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Update a monthly goal
+ */
+export const UpdateMonthlyGoalParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const UpdateMonthlyGoalBody = zod.object({
+  "title": zod.string().min(1).optional(),
+  "subject": zod.string().optional(),
+  "month": zod.number().optional(),
+  "year": zod.number().optional(),
+  "priority": zod.enum(['low', 'medium', 'high']).optional(),
+  "completed": zod.boolean().optional(),
+  "notes": zod.string().nullish()
+})
+
+export const UpdateMonthlyGoalResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "subject": zod.string(),
+  "month": zod.number(),
+  "year": zod.number(),
+  "priority": zod.enum(['low', 'medium', 'high']),
+  "completed": zod.boolean(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete a monthly goal
+ */
+export const DeleteMonthlyGoalParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteMonthlyGoalResponse = zod.void()
+
+
+/**
+ * @summary Toggle monthly goal completion
+ */
+export const ToggleMonthlyGoalParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ToggleMonthlyGoalResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "subject": zod.string(),
+  "month": zod.number(),
+  "year": zod.number(),
+  "priority": zod.enum(['low', 'medium', 'high']),
+  "completed": zod.boolean(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
  * @summary Get app settings
  */
 export const GetSettingsResponse = zod.object({

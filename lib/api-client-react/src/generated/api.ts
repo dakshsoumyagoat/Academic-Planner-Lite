@@ -22,8 +22,12 @@ import type {
 import type {
   DashboardSummary,
   HealthStatus,
+  ListMonthlyGoalsParams,
   ListTasksParams,
   ListTestsParams,
+  MonthlyGoal,
+  MonthlyGoalInput,
+  MonthlyGoalUpdate,
   Settings,
   SettingsUpdate,
   Task,
@@ -950,6 +954,371 @@ export const useDeleteTest = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getDeleteTestMutationOptions(options));
+    }
+
+export const getListMonthlyGoalsUrl = (params: ListMonthlyGoalsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/monthly-goals?${stringifiedParams}` : `/api/monthly-goals`
+}
+
+/**
+ * @summary List monthly goals
+ */
+export const listMonthlyGoals = async (params: ListMonthlyGoalsParams, options?: RequestInit): Promise<MonthlyGoal[]> => {
+
+  return customFetch<MonthlyGoal[]>(getListMonthlyGoalsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMonthlyGoalsQueryKey = (params?: ListMonthlyGoalsParams,) => {
+    return [
+    `/api/monthly-goals`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListMonthlyGoalsQueryOptions = <TData = Awaited<ReturnType<typeof listMonthlyGoals>>, TError = ErrorType<unknown>>(params: ListMonthlyGoalsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMonthlyGoals>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMonthlyGoalsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMonthlyGoals>>> = ({ signal }) => listMonthlyGoals(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMonthlyGoals>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMonthlyGoalsQueryResult = NonNullable<Awaited<ReturnType<typeof listMonthlyGoals>>>
+export type ListMonthlyGoalsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List monthly goals
+ */
+
+export function useListMonthlyGoals<TData = Awaited<ReturnType<typeof listMonthlyGoals>>, TError = ErrorType<unknown>>(
+ params: ListMonthlyGoalsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMonthlyGoals>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMonthlyGoalsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateMonthlyGoalUrl = () => {
+
+
+
+
+  return `/api/monthly-goals`
+}
+
+/**
+ * @summary Create a monthly goal
+ */
+export const createMonthlyGoal = async (monthlyGoalInput: MonthlyGoalInput, options?: RequestInit): Promise<MonthlyGoal> => {
+
+  return customFetch<MonthlyGoal>(getCreateMonthlyGoalUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(monthlyGoalInput)
+  }
+);}
+
+
+
+
+export const getCreateMonthlyGoalMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMonthlyGoal>>, TError,{data: BodyType<MonthlyGoalInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMonthlyGoal>>, TError,{data: BodyType<MonthlyGoalInput>}, TContext> => {
+
+const mutationKey = ['createMonthlyGoal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMonthlyGoal>>, {data: BodyType<MonthlyGoalInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createMonthlyGoal(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMonthlyGoalMutationResult = NonNullable<Awaited<ReturnType<typeof createMonthlyGoal>>>
+    export type CreateMonthlyGoalMutationBody = BodyType<MonthlyGoalInput>
+    export type CreateMonthlyGoalMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a monthly goal
+ */
+export const useCreateMonthlyGoal = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMonthlyGoal>>, TError,{data: BodyType<MonthlyGoalInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMonthlyGoal>>,
+        TError,
+        {data: BodyType<MonthlyGoalInput>},
+        TContext
+      > => {
+      return useMutation(getCreateMonthlyGoalMutationOptions(options));
+    }
+
+export const getUpdateMonthlyGoalUrl = (id: number,) => {
+
+
+
+
+  return `/api/monthly-goals/${id}`
+}
+
+/**
+ * @summary Update a monthly goal
+ */
+export const updateMonthlyGoal = async (id: number,
+    monthlyGoalUpdate: MonthlyGoalUpdate, options?: RequestInit): Promise<MonthlyGoal> => {
+
+  return customFetch<MonthlyGoal>(getUpdateMonthlyGoalUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(monthlyGoalUpdate)
+  }
+);}
+
+
+
+
+export const getUpdateMonthlyGoalMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMonthlyGoal>>, TError,{id: number;data: BodyType<MonthlyGoalUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMonthlyGoal>>, TError,{id: number;data: BodyType<MonthlyGoalUpdate>}, TContext> => {
+
+const mutationKey = ['updateMonthlyGoal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMonthlyGoal>>, {id: number;data: BodyType<MonthlyGoalUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateMonthlyGoal(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMonthlyGoalMutationResult = NonNullable<Awaited<ReturnType<typeof updateMonthlyGoal>>>
+    export type UpdateMonthlyGoalMutationBody = BodyType<MonthlyGoalUpdate>
+    export type UpdateMonthlyGoalMutationError = ErrorType<void>
+
+    /**
+ * @summary Update a monthly goal
+ */
+export const useUpdateMonthlyGoal = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMonthlyGoal>>, TError,{id: number;data: BodyType<MonthlyGoalUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMonthlyGoal>>,
+        TError,
+        {id: number;data: BodyType<MonthlyGoalUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateMonthlyGoalMutationOptions(options));
+    }
+
+export const getDeleteMonthlyGoalUrl = (id: number,) => {
+
+
+
+
+  return `/api/monthly-goals/${id}`
+}
+
+/**
+ * @summary Delete a monthly goal
+ */
+export const deleteMonthlyGoal = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteMonthlyGoalUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteMonthlyGoalMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMonthlyGoal>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteMonthlyGoal>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteMonthlyGoal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteMonthlyGoal>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteMonthlyGoal(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteMonthlyGoalMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMonthlyGoal>>>
+
+    export type DeleteMonthlyGoalMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a monthly goal
+ */
+export const useDeleteMonthlyGoal = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMonthlyGoal>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteMonthlyGoal>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteMonthlyGoalMutationOptions(options));
+    }
+
+export const getToggleMonthlyGoalUrl = (id: number,) => {
+
+
+
+
+  return `/api/monthly-goals/${id}/toggle`
+}
+
+/**
+ * @summary Toggle monthly goal completion
+ */
+export const toggleMonthlyGoal = async (id: number, options?: RequestInit): Promise<MonthlyGoal> => {
+
+  return customFetch<MonthlyGoal>(getToggleMonthlyGoalUrl(id),
+  {
+    ...options,
+    method: 'PATCH'
+
+
+  }
+);}
+
+
+
+
+export const getToggleMonthlyGoalMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof toggleMonthlyGoal>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof toggleMonthlyGoal>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['toggleMonthlyGoal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof toggleMonthlyGoal>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  toggleMonthlyGoal(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ToggleMonthlyGoalMutationResult = NonNullable<Awaited<ReturnType<typeof toggleMonthlyGoal>>>
+
+    export type ToggleMonthlyGoalMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Toggle monthly goal completion
+ */
+export const useToggleMonthlyGoal = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof toggleMonthlyGoal>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof toggleMonthlyGoal>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getToggleMonthlyGoalMutationOptions(options));
     }
 
 export const getGetSettingsUrl = () => {
