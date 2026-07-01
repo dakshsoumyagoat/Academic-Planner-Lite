@@ -1,18 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useListTasks, getListTasksQueryKey, useListTests, getListTestsQueryKey } from "@workspace/api-client-react";
 import {
   format,
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
-  isSameMonth,
   isToday,
   parseISO,
   addMonths,
   subMonths,
   getDay,
 } from "date-fns";
-import { ChevronLeft, ChevronRight, CheckCircle2, Circle, ClipboardList } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, Circle, ClipboardList, Palmtree } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +25,7 @@ const subjectDot: Record<string, string> = {
 const testTypeDot: Record<string, string> = {
   jee: "bg-indigo-400",
   coaching: "bg-blue-300",
-  school: "bg-emerald-300",
+  school: "bg-green-300",
   mock: "bg-amber-400",
 };
 
@@ -37,12 +36,26 @@ const testTypeColor: Record<string, string> = {
   mock: "text-amber-400 bg-amber-400/10 border-amber-400/20",
 };
 
+interface Holiday {
+  id: number;
+  name: string;
+  date: string;
+}
+
 export default function Calendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
 
   const { data: tasks } = useListTasks({} as any, { query: { queryKey: getListTasksQueryKey({} as any) } });
   const { data: tests } = useListTests({} as any, { query: { queryKey: getListTestsQueryKey({} as any) } });
+
+  useEffect(() => {
+    fetch("/api/holidays")
+      .then((r) => r.json())
+      .then(setHolidays)
+      .catch(() => {});
+  }, []);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -60,8 +73,15 @@ export default function Calendar() {
     testsByDate[t.date].push(t);
   });
 
+  const holidaysByDate: Record<string, Holiday[]> = {};
+  holidays.forEach((h) => {
+    if (!holidaysByDate[h.date]) holidaysByDate[h.date] = [];
+    holidaysByDate[h.date].push(h);
+  });
+
   const selectedTasks = selectedDate ? (tasksByDate[selectedDate] ?? []) : [];
   const selectedTests = selectedDate ? (testsByDate[selectedDate] ?? []) : [];
+  const selectedHolidays = selectedDate ? (holidaysByDate[selectedDate] ?? []) : [];
 
   const startDay = getDay(monthStart);
   const emptyBefore = Array(startDay).fill(null);
@@ -104,9 +124,10 @@ export default function Calendar() {
               const dateStr = format(day, "yyyy-MM-dd");
               const dayTasks = tasksByDate[dateStr] ?? [];
               const dayTests = testsByDate[dateStr] ?? [];
-              const hasItems = dayTasks.length > 0 || dayTests.length > 0;
+              const dayHolidays = holidaysByDate[dateStr] ?? [];
               const isSelected = selectedDate === dateStr;
               const isTodayDate = isToday(day);
+              const isHoliday = dayHolidays.length > 0;
 
               return (
                 <button
@@ -115,30 +136,37 @@ export default function Calendar() {
                   className={`relative flex flex-col items-center pt-2 pb-1 rounded-md transition-all min-h-[56px] ${
                     isSelected
                       ? "bg-primary text-primary-foreground"
+                      : isHoliday
+                      ? "bg-rose-500/8 text-foreground"
                       : isTodayDate
                       ? "bg-primary/10 text-primary"
                       : "hover:bg-muted/50 text-foreground"
                   }`}
                 >
-                  <span className={`text-sm font-medium ${isSelected ? "text-primary-foreground" : isTodayDate ? "text-primary font-bold" : ""}`}>
+                  <span className={`text-sm font-medium ${
+                    isSelected ? "text-primary-foreground" :
+                    isTodayDate ? "text-primary font-bold" :
+                    isHoliday ? "text-rose-400" : ""
+                  }`}>
                     {format(day, "d")}
                   </span>
-                  {hasItems && (
-                    <div className="flex items-center gap-0.5 mt-1 flex-wrap justify-center max-w-[40px]">
-                      {dayTasks.slice(0, 3).map((t, idx) => (
-                        <span
-                          key={idx}
-                          className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-primary-foreground/70" : (subjectDot[t.subject] || "bg-purple-400")}`}
-                        />
-                      ))}
-                      {dayTests.slice(0, 2).map((t, idx) => (
-                        <span
-                          key={`test-${idx}`}
-                          className={`w-1.5 h-1.5 rounded-sm ${isSelected ? "bg-primary-foreground/70" : (testTypeDot[t.type] || "bg-indigo-400")}`}
-                        />
-                      ))}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-0.5 mt-1 flex-wrap justify-center max-w-[40px]">
+                    {isHoliday && (
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-primary-foreground/70" : "bg-rose-400"}`} />
+                    )}
+                    {dayTests.slice(0, 2).map((t, idx) => (
+                      <span
+                        key={`test-${idx}`}
+                        className={`w-1.5 h-1.5 rounded-sm ${isSelected ? "bg-primary-foreground/70" : (testTypeDot[t.type] || "bg-indigo-400")}`}
+                      />
+                    ))}
+                    {dayTasks.slice(0, 2).map((t, idx) => (
+                      <span
+                        key={`task-${idx}`}
+                        className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-primary-foreground/70" : (subjectDot[t.subject] || "bg-purple-400")}`}
+                      />
+                    ))}
+                  </div>
                 </button>
               );
             })}
@@ -146,16 +174,15 @@ export default function Calendar() {
         </Card>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 mt-3 flex-wrap">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">Tasks:</span>
-            {Object.entries(subjectDot).map(([s, c]) => (
-              <span key={s} className="flex items-center gap-1">
-                <span className={`w-2 h-2 rounded-full ${c}`} />
-                {s}
-              </span>
-            ))}
-          </div>
+        <div className="flex items-center gap-x-4 gap-y-1.5 mt-3 flex-wrap text-xs text-muted-foreground">
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-400" />Holiday</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-indigo-400" />JEE</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-amber-400" />Mock</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-blue-300" />Coaching</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-green-300" />School</span>
+          <span className="flex items-center gap-1 border-l border-border/50 pl-3"><span className="w-2 h-2 rounded-full bg-blue-400" />Physics</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" />Chemistry</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-400" />Maths</span>
         </div>
       </div>
 
@@ -166,24 +193,40 @@ export default function Calendar() {
             {format(parseISO(selectedDate), "d MMMM yyyy")}
           </h2>
 
-          {selectedTasks.length === 0 && selectedTests.length === 0 ? (
+          {selectedTasks.length === 0 && selectedTests.length === 0 && selectedHolidays.length === 0 ? (
             <Card className="bg-card border-border p-6 text-center">
               <p className="text-xs text-muted-foreground">Nothing scheduled</p>
             </Card>
           ) : (
             <div className="space-y-3">
+              {/* Holidays */}
+              {selectedHolidays.length > 0 && (
+                <Card className="bg-rose-500/5 border-rose-500/20 p-3">
+                  <p className="text-xs text-rose-400 uppercase tracking-wider font-medium mb-2">Holiday</p>
+                  <div className="space-y-1.5">
+                    {selectedHolidays.map((h) => (
+                      <div key={h.id} className="flex items-center gap-2">
+                        <Palmtree className="h-3.5 w-3.5 text-rose-400 flex-shrink-0" />
+                        <p className="text-xs font-medium text-foreground">{h.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
+              {/* Tests */}
               {selectedTests.length > 0 && (
                 <Card className="bg-card border-border p-3">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-2">Tests</p>
                   <div className="space-y-2">
                     {selectedTests.map((test) => (
-                      <div key={test.id} className="flex items-center gap-2">
-                        <ClipboardList className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                      <div key={test.id} className="flex items-start gap-2">
+                        <ClipboardList className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-foreground truncate">{test.name}</p>
-                          <p className="text-xs text-muted-foreground">{test.time}</p>
+                          <p className="text-xs font-medium text-foreground leading-snug">{test.name}</p>
+                          <p className="text-xs text-muted-foreground">{test.time}{test.notes ? ` · ${test.notes}` : ""}</p>
                         </div>
-                        <span className={`text-xs px-1 py-0.5 rounded border font-medium capitalize ${testTypeColor[test.type] || testTypeColor.mock}`}>
+                        <span className={`text-xs px-1 py-0.5 rounded border font-medium capitalize flex-shrink-0 ${testTypeColor[test.type] || testTypeColor.mock}`}>
                           {test.type}
                         </span>
                       </div>
@@ -192,6 +235,7 @@ export default function Calendar() {
                 </Card>
               )}
 
+              {/* Tasks */}
               {selectedTasks.length > 0 && (
                 <Card className="bg-card border-border p-3">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-2">Tasks</p>
@@ -203,12 +247,12 @@ export default function Calendar() {
                           : <Circle className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
                         }
                         <div className="flex-1 min-w-0">
-                          <p className={`text-xs font-medium ${task.completed ? "line-through text-muted-foreground" : "text-foreground"} truncate`}>
+                          <p className={`text-xs font-medium ${task.completed ? "line-through text-muted-foreground" : "text-foreground"} leading-snug`}>
                             {task.title}
                           </p>
                           {task.chapter && <p className="text-xs text-muted-foreground">{task.chapter}</p>}
                         </div>
-                        <span className={`text-xs px-1 py-0.5 rounded font-medium ${
+                        <span className={`text-xs font-medium flex-shrink-0 ${
                           task.subject === "Physics" ? "text-blue-400" :
                           task.subject === "Chemistry" ? "text-emerald-400" :
                           task.subject === "Maths" ? "text-orange-400" : "text-purple-400"
