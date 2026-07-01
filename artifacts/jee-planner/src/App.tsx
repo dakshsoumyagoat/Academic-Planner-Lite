@@ -11,6 +11,8 @@ import Tasks from "@/pages/tasks";
 import Tests from "@/pages/tests";
 import Search from "@/pages/search";
 import Settings from "@/pages/settings";
+import { useGetSettings, getGetSettingsQueryKey } from "@workspace/api-client-react";
+import { applyAccentColor } from "@/lib/accent";
 
 const queryClient = new QueryClient();
 
@@ -30,17 +32,26 @@ function Router() {
   );
 }
 
-function ThemeInit() {
+function ThemeAndAccentInit() {
+  const { data: settings } = useGetSettings({ query: { queryKey: getGetSettingsQueryKey() } });
+
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
+
+  useEffect(() => {
+    if (!settings) return;
+    document.documentElement.classList.toggle("dark", settings.theme === "dark");
+    applyAccentColor(settings.accentColor);
+  }, [settings]);
+
   return null;
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeInit />
+      <ThemeAndAccentInit />
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <Router />

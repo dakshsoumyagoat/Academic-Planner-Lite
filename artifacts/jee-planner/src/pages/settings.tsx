@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useGetSettings, getGetSettingsQueryKey, useUpdateSettings } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, Moon, Sun } from "lucide-react";
+import { applyAccentColor } from "@/lib/accent";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -33,6 +34,7 @@ export default function Settings() {
   }
 
   function handleAccentColor(color: string) {
+    applyAccentColor(color);
     updateSettings.mutate({ data: { accentColor: color } });
   }
 
