@@ -1,22 +1,28 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: JEE Planner API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: tasks
+    description: Task management
+  - name: tests
+    description: Test management
+  - name: settings
+    description: App settings
+  - name: dashboard
+    description: Dashboard summary
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +30,463 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /tasks:
+    get:
+      operationId: listTasks
+      tags: [tasks]
+      summary: List all tasks
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+          description: Filter by due date (YYYY-MM-DD)
+        - name: subject
+          in: query
+          schema:
+            type: string
+          description: Filter by subject
+        - name: completed
+          in: query
+          schema:
+            type: boolean
+          description: Filter by completion status
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search query
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      operationId: createTask
+      tags: [tasks]
+      summary: Create a new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    get:
+      operationId: getTask
+      tags: [tasks]
+      summary: Get a task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Task found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateTask
+      tags: [tasks]
+      summary: Update a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteTask
+      tags: [tasks]
+      summary: Delete a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /tasks/{id}/toggle:
+    patch:
+      operationId: toggleTask
+      tags: [tasks]
+      summary: Toggle task completion
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Toggled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+
+  /tests:
+    get:
+      operationId: listTests
+      tags: [tests]
+      summary: List all tests
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+          description: Search query
+        - name: upcoming
+          in: query
+          schema:
+            type: boolean
+          description: Only upcoming tests
+      responses:
+        "200":
+          description: List of tests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Test"
+    post:
+      operationId: createTest
+      tags: [tests]
+      summary: Create a new test
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
+
+  /tests/{id}:
+    get:
+      operationId: getTest
+      tags: [tests]
+      summary: Get a test by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Test found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateTest
+      tags: [tests]
+      summary: Update a test
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Test"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteTest
+      tags: [tests]
+      summary: Delete a test
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get app settings
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+    patch:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Update app settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settings"
+
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    Task:
+      type: object
+      required: [id, title, subject, dueDate, priority, completed, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        subject:
+          type: string
+        chapter:
+          type: ["string", "null"]
+        dueDate:
+          type: string
+          description: Date in YYYY-MM-DD format
+        priority:
+          type: string
+          enum: [low, medium, high]
+        completed:
+          type: boolean
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    TaskInput:
+      type: object
+      required: [title, subject, dueDate, priority]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        subject:
+          type: string
+        chapter:
+          type: string
+        dueDate:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high]
+        notes:
+          type: string
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        subject:
+          type: string
+        chapter:
+          type: ["string", "null"]
+        dueDate:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high]
+        completed:
+          type: boolean
+        notes:
+          type: ["string", "null"]
+
+    Test:
+      type: object
+      required: [id, name, date, time, type, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        date:
+          type: string
+          description: Date in YYYY-MM-DD format
+        time:
+          type: string
+          description: Time in HH:MM format
+        type:
+          type: string
+          enum: [coaching, school, mock, jee]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    TestInput:
+      type: object
+      required: [name, date, time, type]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        date:
+          type: string
+        time:
+          type: string
+        type:
+          type: string
+          enum: [coaching, school, mock, jee]
+        notes:
+          type: string
+
+    TestUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        date:
+          type: string
+        time:
+          type: string
+        type:
+          type: string
+          enum: [coaching, school, mock, jee]
+        notes:
+          type: ["string", "null"]
+
+    Settings:
+      type: object
+      required: [id, theme, accentColor, jeeMainDate, jeeAdvancedDate]
+      properties:
+        id:
+          type: integer
+        theme:
+          type: string
+          enum: [dark, light]
+        accentColor:
+          type: string
+        jeeMainDate:
+          type: string
+        jeeAdvancedDate:
+          type: string
+
+    SettingsUpdate:
+      type: object
+      properties:
+        theme:
+          type: string
+          enum: [dark, light]
+        accentColor:
+          type: string
+        jeeMainDate:
+          type: string
+        jeeAdvancedDate:
+          type: string
+
+    DashboardSummary:
+      type: object
+      required: [todayTasks, upcomingTests, weekTasks, daysToJeeMain, daysToJeeAdvanced, todayDate]
+      properties:
+        todayTasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        upcomingTests:
+          type: array
+          items:
+            $ref: "#/components/schemas/Test"
+        weekTasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        daysToJeeMain:
+          type: ["integer", "null"]
+        daysToJeeAdvanced:
+          type: ["integer", "null"]
+        todayDate:
+          type: string
