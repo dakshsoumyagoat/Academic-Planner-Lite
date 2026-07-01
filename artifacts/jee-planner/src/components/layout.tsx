@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useEffect, useState } from "react";
 import { 
   LayoutDashboard, 
   CalendarDays, 
@@ -7,9 +7,13 @@ import {
   FileText, 
   Search, 
   Settings,
-  Menu
+  Menu,
+  Wifi,
+  WifiOff
 } from "lucide-react";
 import { Button } from "./ui/button";
+import { getIsOnline } from "@/lib/sync-fetch";
+import { getPendingCount } from "@/lib/sync-engine";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,6 +22,16 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [online, setOnline] = useState(getIsOnline());
+  const [pending, setPending] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOnline(getIsOnline());
+      getPendingCount().then((c) => setPending(c));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -32,8 +46,18 @@ export function Layout({ children }: LayoutProps) {
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 flex-col bg-sidebar border-r border-sidebar-border">
-        <div className="h-16 flex items-center px-6 border-b border-sidebar-border">
+        <div className="h-16 flex items-center px-6 border-b border-sidebar-border justify-between">
           <h1 className="text-lg font-semibold text-primary tracking-tight">JEE Planner</h1>
+          <div className="flex items-center gap-1.5">
+            {online ? (
+              <Wifi className="h-3.5 w-3.5 text-emerald-400" />
+            ) : (
+              <WifiOff className="h-3.5 w-3.5 text-amber-400" />
+            )}
+            {pending > 0 && (
+              <span className="text-[10px] font-medium text-amber-400">{pending}</span>
+            )}
+          </div>
         </div>
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {navigation.map((item) => {
