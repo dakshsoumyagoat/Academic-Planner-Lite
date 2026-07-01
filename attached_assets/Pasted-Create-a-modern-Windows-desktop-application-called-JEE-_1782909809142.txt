@@ -1,0 +1,119 @@
+Create a modern Windows desktop application called "JEE Planner".
+
+The application should be built using Python and CustomTkinter (or another modern Windows UI framework). The design should look clean, minimal, and similar to Windows 11 with rounded corners, smooth animations, and dark mode by default.
+
+The app should focus ONLY on planning and task management. No Pomodoro timers, AI assistants, streaks, quotes, gamification, analytics, or unnecessary features.
+
+==========================
+HOME PAGE
+==========================
+
+Display:
+
+• Today's date
+• Days remaining until JEE Main
+• Days remaining until JEE Advanced
+• Today's tasks
+• Upcoming tests (next 5)
+• Tasks due this week
+
+==========================
+CALENDAR
+==========================
+
+A monthly calendar.
+
+Clicking a date opens that day's schedule.
+
+Each day can contain:
+
+• Study tasks
+• Coaching tests
+• School exams
+• Personal reminders
+
+Dates containing tasks should show a small colored dot.
+
+==========================
+TASKS
+==========================
+
+Each task should contain:
+
+• Title
+• Subject (Physics, Chemistry, Maths or Custom)
+• Optional chapter
+• Due date
+• Priority (Low, Medium, High)
+• Checkbox for completion
+• Notes
+
+Tasks should be easy to create, edit, delete, and drag between dates.
+
+Completed tasks should be crossed out but remain visible.
+
+==========================
+TESTS
+==========================
+
+Separate page for tests.
+
+Each test contains:
+
+• Test name
+• Date
+• Time
+• Type (Coaching, School, Mock, JEE)
+• Notes
+
+Upcoming tests should automatically appear on the home page.
+
+==========================
+UI
+==========================
+
+Left sidebar:
+
+• Home
+• Calendar
+• Tasks
+• Tests
+• Settings
+
+Main area updates instantly without opening new windows.
+
+==========================
+SEARCH
+==========================
+
+Search tasks and tests instantly.
+
+==========================
+SETTINGS
+==========================
+
+• Dark/Light mode
+• Change accent color
+• Backup database
+• Restore backup
+
+==========================
+DATA
+==========================
+
+Store everything locally using SQLite.
+
+Autosave changes immediately.
+
+==========================
+EXTRAS
+==========================
+
+• Drag-and-drop task scheduling
+• Right-click context menus
+• Keyboard shortcuts
+• Smooth animations
+• Responsive interface
+• No internet required
+
+The application should prioritize speed, simplicity, and ease of use. Every action should take at most one or two clicks. The interface should feel polished and distraction-free, similar to Microsoft To Do, but optimized for JEE students.
