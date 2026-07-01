@@ -1,11 +1,8 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useGetSettings, getGetSettingsQueryKey, useUpdateSettings } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, Moon, Sun } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ACCENT_COLORS = [
@@ -23,14 +20,8 @@ export default function Settings() {
   const { data: settings, isLoading } = useGetSettings({ query: { queryKey: getGetSettingsQueryKey() } });
   const updateSettings = useUpdateSettings({ mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getGetSettingsQueryKey() }) } });
 
-  const [jeeMainDate, setJeeMainDate] = useState("");
-  const [jeeAdvancedDate, setJeeAdvancedDate] = useState("");
-  const [saved, setSaved] = useState(false);
-
   useEffect(() => {
     if (settings) {
-      setJeeMainDate(settings.jeeMainDate);
-      setJeeAdvancedDate(settings.jeeAdvancedDate);
       document.documentElement.classList.toggle("dark", settings.theme === "dark");
     }
   }, [settings]);
@@ -45,21 +36,10 @@ export default function Settings() {
     updateSettings.mutate({ data: { accentColor: color } });
   }
 
-  function handleSaveDates(e: React.FormEvent) {
-    e.preventDefault();
-    updateSettings.mutate({ data: { jeeMainDate, jeeAdvancedDate } }, {
-      onSuccess: () => {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
-      }
-    });
-  }
-
   if (isLoading) {
     return (
       <div className="space-y-4 max-w-xl">
         <Skeleton className="h-8 w-32" />
-        <Skeleton className="h-32" />
         <Skeleton className="h-32" />
       </div>
     );
@@ -69,7 +49,6 @@ export default function Settings() {
     <div className="space-y-5 max-w-xl">
       <h1 className="text-xl font-bold text-foreground">Settings</h1>
 
-      {/* Theme */}
       <Card className="bg-card border-border p-5">
         <h2 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">Appearance</h2>
         <div className="flex items-center justify-between">
@@ -79,11 +58,7 @@ export default function Settings() {
           </div>
           <button
             onClick={handleThemeToggle}
-            className={`flex items-center gap-2 px-3 py-2 rounded-md border text-sm font-medium transition-colors ${
-              settings?.theme === "dark"
-                ? "bg-muted border-border text-foreground"
-                : "bg-muted border-border text-foreground"
-            }`}
+            className="flex items-center gap-2 px-3 py-2 rounded-md border bg-muted border-border text-sm font-medium transition-colors text-foreground"
           >
             {settings?.theme === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             {settings?.theme === "dark" ? "Dark" : "Light"}
@@ -110,34 +85,6 @@ export default function Settings() {
             ))}
           </div>
         </div>
-      </Card>
-
-      {/* JEE Dates */}
-      <Card className="bg-card border-border p-5">
-        <h2 className="text-sm font-semibold text-foreground mb-4 uppercase tracking-wider">Exam Dates</h2>
-        <form onSubmit={handleSaveDates} className="space-y-4">
-          <div className="space-y-1.5">
-            <Label>JEE Main Date</Label>
-            <Input
-              type="date"
-              value={jeeMainDate}
-              onChange={(e) => setJeeMainDate(e.target.value)}
-              className="bg-background border-input max-w-xs"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label>JEE Advanced Date</Label>
-            <Input
-              type="date"
-              value={jeeAdvancedDate}
-              onChange={(e) => setJeeAdvancedDate(e.target.value)}
-              className="bg-background border-input max-w-xs"
-            />
-          </div>
-          <Button type="submit" size="sm" disabled={updateSettings.isPending}>
-            {saved ? <><Check className="h-4 w-4 mr-1" /> Saved</> : "Save Dates"}
-          </Button>
-        </form>
       </Card>
     </div>
   );

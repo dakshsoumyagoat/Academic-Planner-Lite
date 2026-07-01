@@ -1,8 +1,7 @@
-import { useGetDashboard, getGetDashboardQueryKey, useToggleTask, useListTasks, getListTasksQueryKey } from "@workspace/api-client-react";
+import { useGetDashboard, getGetDashboardQueryKey, useToggleTask } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { CheckCircle2, Circle, Clock, BookOpen, FlaskConical, Calculator, Beaker } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -33,19 +32,6 @@ const testTypeColor: Record<string, string> = {
   mock: "text-amber-400 bg-amber-400/10 border-amber-400/20",
 };
 
-function CountdownCard({ label, days }: { label: string; days: number | null | undefined }) {
-  return (
-    <Card className="bg-card border-border p-5 flex flex-col gap-1">
-      <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium">{label}</p>
-      {days === null || days === undefined ? (
-        <p className="text-2xl font-bold text-foreground">—</p>
-      ) : (
-        <p className="text-3xl font-bold text-primary">{days}</p>
-      )}
-      <p className="text-xs text-muted-foreground">days remaining</p>
-    </Card>
-  );
-}
 
 function TaskRow({ task, onToggle }: { task: any; onToggle: (id: number) => void }) {
   return (
@@ -112,12 +98,6 @@ export default function Dashboard() {
       <div>
         <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-1">Today</p>
         <h1 className="text-2xl font-bold text-foreground">{today}</h1>
-      </div>
-
-      {/* Countdown */}
-      <div className="grid grid-cols-2 gap-4">
-        <CountdownCard label="JEE Main" days={data?.daysToJeeMain} />
-        <CountdownCard label="JEE Advanced" days={data?.daysToJeeAdvanced} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
