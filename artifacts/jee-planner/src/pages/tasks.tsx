@@ -53,7 +53,7 @@ const emptyForm: TaskFormData = {
   notes: "",
 };
 
-function TaskFormDialog({
+export function TaskFormDialog({
   open,
   onClose,
   initial,

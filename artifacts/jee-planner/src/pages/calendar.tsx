@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useListTasks, getListTasksQueryKey, useListTests, getListTestsQueryKey } from "@workspace/api-client-react";
+import { useListTasks, getListTasksQueryKey, useListTests, getListTestsQueryKey, useCreateTask } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   format,
   startOfMonth,
@@ -11,9 +12,10 @@ import {
   subMonths,
   getDay,
 } from "date-fns";
-import { ChevronLeft, ChevronRight, CheckCircle2, Circle, ClipboardList, Palmtree } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, Circle, ClipboardList, Palmtree, Plus } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { TaskFormDialog } from "@/pages/tasks";
 
 const subjectDot: Record<string, string> = {
   Physics: "bg-blue-400",
@@ -43,15 +45,18 @@ interface Holiday {
 }
 
 export default function Calendar() {
+  const qc = useQueryClient();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [holidays, setHolidays] = useState<Holiday[]>([]);
+  const [addTaskOpen, setAddTaskOpen] = useState(false);
 
   const { data: tasks } = useListTasks({} as any, { query: { queryKey: getListTasksQueryKey({} as any) } });
   const { data: tests } = useListTests({} as any, { query: { queryKey: getListTestsQueryKey({} as any) } });
+  const createTask = useCreateTask({ mutation: { onSuccess: () => qc.invalidateQueries({ queryKey: getListTasksQueryKey() }) } });
 
   useEffect(() => {
-    fetch("/api/holidays")
+    fetch("/api/holidays", { credentials: "include" })
       .then((r) => r.json())
       .then(setHolidays)
       .catch(() => {});
@@ -85,6 +90,20 @@ export default function Calendar() {
 
   const startDay = getDay(monthStart);
   const emptyBefore = Array(startDay).fill(null);
+
+  function handleAddTask(data: { title: string; subject: string; chapter: string; dueDate: string; priority: "low" | "medium" | "high"; notes: string }) {
+    createTask.mutate({
+      data: {
+        title: data.title,
+        subject: data.subject,
+        chapter: data.chapter || undefined,
+        dueDate: data.dueDate,
+        priority: data.priority,
+        notes: data.notes || undefined,
+      },
+    });
+    setAddTaskOpen(false);
+  }
 
   return (
     <div className="flex gap-6 max-w-5xl">
@@ -189,13 +208,30 @@ export default function Calendar() {
       {/* Day Panel */}
       {selectedDate && (
         <div className="w-72 flex-shrink-0">
-          <h2 className="text-sm font-semibold text-foreground mb-3">
-            {format(parseISO(selectedDate), "d MMMM yyyy")}
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-foreground">
+              {format(parseISO(selectedDate), "d MMMM yyyy")}
+            </h2>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 px-2 text-xs gap-1"
+              onClick={() => setAddTaskOpen(true)}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add Task
+            </Button>
+          </div>
 
           {selectedTasks.length === 0 && selectedTests.length === 0 && selectedHolidays.length === 0 ? (
             <Card className="bg-card border-border p-6 text-center">
               <p className="text-xs text-muted-foreground">Nothing scheduled</p>
+              <button
+                onClick={() => setAddTaskOpen(true)}
+                className="mt-2 text-xs text-primary hover:underline"
+              >
+                Add a task for this day
+              </button>
             </Card>
           ) : (
             <div className="space-y-3">
@@ -267,6 +303,24 @@ export default function Calendar() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Add Task Dialog — pre-filled with selected date */}
+      {selectedDate && (
+        <TaskFormDialog
+          open={addTaskOpen}
+          onClose={() => setAddTaskOpen(false)}
+          initial={{
+            title: "",
+            subject: "Physics",
+            chapter: "",
+            dueDate: selectedDate,
+            priority: "medium",
+            notes: "",
+          }}
+          onSubmit={handleAddTask}
+          title={`New Task — ${format(parseISO(selectedDate), "d MMM yyyy")}`}
+        />
       )}
     </div>
   );
