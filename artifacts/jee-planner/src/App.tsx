@@ -11,6 +11,7 @@ import Tasks from "@/pages/tasks";
 import Tests from "@/pages/tests";
 import Search from "@/pages/search";
 import Settings from "@/pages/settings";
+import MonthlyGoals from "@/pages/monthly-goals";
 import { useGetSettings, getGetSettingsQueryKey } from "@workspace/api-client-react";
 import { applyAccentColor } from "@/lib/accent";
 
@@ -25,6 +26,7 @@ function Router() {
         <Route path="/tasks" component={Tasks} />
         <Route path="/tests" component={Tests} />
         <Route path="/search" component={Search} />
+        <Route path="/monthly-goals" component={MonthlyGoals} />
         <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
       </Switch>
