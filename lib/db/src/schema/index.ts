@@ -3,3 +3,4 @@ export * from "./tests";
 export * from "./settings";
 export * from "./holidays";
 export * from "./monthly-goals";
+export * from "./syllabus";

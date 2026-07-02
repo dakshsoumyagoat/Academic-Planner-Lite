@@ -167,6 +167,39 @@ export interface SettingsUpdate {
   jeeAdvancedDate?: string;
 }
 
+export type SyllabusChapterStatus = typeof SyllabusChapterStatus[keyof typeof SyllabusChapterStatus];
+
+
+export const SyllabusChapterStatus = {
+  not_started: 'not_started',
+  in_progress: 'in_progress',
+  revised: 'revised',
+  done: 'done',
+} as const;
+
+export interface SyllabusChapter {
+  id: number;
+  subject: string;
+  track: string;
+  chapter: string;
+  status: SyllabusChapterStatus;
+  updatedAt: string;
+}
+
+export type SyllabusUpdateStatus = typeof SyllabusUpdateStatus[keyof typeof SyllabusUpdateStatus];
+
+
+export const SyllabusUpdateStatus = {
+  not_started: 'not_started',
+  in_progress: 'in_progress',
+  revised: 'revised',
+  done: 'done',
+} as const;
+
+export interface SyllabusUpdate {
+  status: SyllabusUpdateStatus;
+}
+
 export type MonthlyGoalPriority = typeof MonthlyGoalPriority[keyof typeof MonthlyGoalPriority];
 
 

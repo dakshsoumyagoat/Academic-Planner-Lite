@@ -268,6 +268,48 @@ paths:
         "404":
           description: Not found
 
+  /syllabus:
+    get:
+      operationId: listSyllabus
+      tags: [syllabus]
+      summary: List all syllabus chapters
+      responses:
+        "200":
+          description: Syllabus chapters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SyllabusChapter"
+
+  /syllabus/{id}:
+    patch:
+      operationId: updateSyllabusChapter
+      tags: [syllabus]
+      summary: Update chapter status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SyllabusUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyllabusChapter"
+        "404":
+          description: Not found
+
   /monthly-goals:
     get:
       operationId: listMonthlyGoals
@@ -571,6 +613,32 @@ components:
           type: string
         jeeAdvancedDate:
           type: string
+
+    SyllabusChapter:
+      type: object
+      required: [id, subject, track, chapter, status, updatedAt]
+      properties:
+        id:
+          type: integer
+        subject:
+          type: string
+        track:
+          type: string
+        chapter:
+          type: string
+        status:
+          type: string
+          enum: [not_started, in_progress, revised, done]
+        updatedAt:
+          type: string
+
+    SyllabusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [not_started, in_progress, revised, done]
 
     MonthlyGoal:
       type: object

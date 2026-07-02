@@ -10,7 +10,8 @@ import {
   Menu,
   Wifi,
   WifiOff,
-  Target
+  Target,
+  BookMarked
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { getIsOnline } from "@/lib/sync-fetch";
@@ -39,6 +40,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "Calendar", href: "/calendar", icon: CalendarDays },
     { name: "Tasks", href: "/tasks", icon: CheckSquare },
     { name: "Monthly Goals", href: "/monthly-goals", icon: Target },
+    { name: "Syllabus", href: "/syllabus", icon: BookMarked },
     { name: "Tests", href: "/tests", icon: FileText },
     { name: "Search", href: "/search", icon: Search },
     { name: "Settings", href: "/settings", icon: Settings },

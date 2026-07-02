@@ -30,6 +30,8 @@ import type {
   MonthlyGoalUpdate,
   Settings,
   SettingsUpdate,
+  SyllabusChapter,
+  SyllabusUpdate,
   Task,
   TaskInput,
   TaskUpdate,
@@ -954,6 +956,154 @@ export const useDeleteTest = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getDeleteTestMutationOptions(options));
+    }
+
+export const getListSyllabusUrl = () => {
+
+
+
+
+  return `/api/syllabus`
+}
+
+/**
+ * @summary List all syllabus chapters
+ */
+export const listSyllabus = async ( options?: RequestInit): Promise<SyllabusChapter[]> => {
+
+  return customFetch<SyllabusChapter[]>(getListSyllabusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListSyllabusQueryKey = () => {
+    return [
+    `/api/syllabus`
+    ] as const;
+    }
+
+
+export const getListSyllabusQueryOptions = <TData = Awaited<ReturnType<typeof listSyllabus>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSyllabus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSyllabusQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSyllabus>>> = ({ signal }) => listSyllabus({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSyllabus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListSyllabusQueryResult = NonNullable<Awaited<ReturnType<typeof listSyllabus>>>
+export type ListSyllabusQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List all syllabus chapters
+ */
+
+export function useListSyllabus<TData = Awaited<ReturnType<typeof listSyllabus>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSyllabus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListSyllabusQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateSyllabusChapterUrl = (id: number,) => {
+
+
+
+
+  return `/api/syllabus/${id}`
+}
+
+/**
+ * @summary Update chapter status
+ */
+export const updateSyllabusChapter = async (id: number,
+    syllabusUpdate: SyllabusUpdate, options?: RequestInit): Promise<SyllabusChapter> => {
+
+  return customFetch<SyllabusChapter>(getUpdateSyllabusChapterUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(syllabusUpdate)
+  }
+);}
+
+
+
+
+export const getUpdateSyllabusChapterMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSyllabusChapter>>, TError,{id: number;data: BodyType<SyllabusUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateSyllabusChapter>>, TError,{id: number;data: BodyType<SyllabusUpdate>}, TContext> => {
+
+const mutationKey = ['updateSyllabusChapter'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateSyllabusChapter>>, {id: number;data: BodyType<SyllabusUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateSyllabusChapter(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateSyllabusChapterMutationResult = NonNullable<Awaited<ReturnType<typeof updateSyllabusChapter>>>
+    export type UpdateSyllabusChapterMutationBody = BodyType<SyllabusUpdate>
+    export type UpdateSyllabusChapterMutationError = ErrorType<void>
+
+    /**
+ * @summary Update chapter status
+ */
+export const useUpdateSyllabusChapter = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSyllabusChapter>>, TError,{id: number;data: BodyType<SyllabusUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateSyllabusChapter>>,
+        TError,
+        {id: number;data: BodyType<SyllabusUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateSyllabusChapterMutationOptions(options));
     }
 
 export const getListMonthlyGoalsUrl = (params: ListMonthlyGoalsParams,) => {

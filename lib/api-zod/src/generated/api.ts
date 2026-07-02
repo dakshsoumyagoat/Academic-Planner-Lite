@@ -254,6 +254,41 @@ export const DeleteTestResponse = zod.void()
 
 
 /**
+ * @summary List all syllabus chapters
+ */
+export const ListSyllabusResponseItem = zod.object({
+  "id": zod.number(),
+  "subject": zod.string(),
+  "track": zod.string(),
+  "chapter": zod.string(),
+  "status": zod.enum(['not_started', 'in_progress', 'revised', 'done']),
+  "updatedAt": zod.string()
+})
+export const ListSyllabusResponse = zod.array(ListSyllabusResponseItem)
+
+
+/**
+ * @summary Update chapter status
+ */
+export const UpdateSyllabusChapterParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateSyllabusChapterBody = zod.object({
+  "status": zod.enum(['not_started', 'in_progress', 'revised', 'done'])
+})
+
+export const UpdateSyllabusChapterResponse = zod.object({
+  "id": zod.number(),
+  "subject": zod.string(),
+  "track": zod.string(),
+  "chapter": zod.string(),
+  "status": zod.enum(['not_started', 'in_progress', 'revised', 'done']),
+  "updatedAt": zod.string()
+})
+
+
+/**
  * @summary List monthly goals
  */
 export const ListMonthlyGoalsQueryParams = zod.object({
