@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ACCENT_COLORS = [
+  { name: "Lime", value: "#4aff00" },
   { name: "Indigo", value: "#6366f1" },
   { name: "Violet", value: "#8b5cf6" },
   { name: "Blue", value: "#3b82f6" },
