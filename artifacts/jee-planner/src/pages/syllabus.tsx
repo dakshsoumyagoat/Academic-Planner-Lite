@@ -114,7 +114,7 @@ export default function Syllabus() {
       {/* Header */}
       <div>
         <p className="text-xs text-muted-foreground uppercase tracking-widest font-medium mb-1">Syllabus Tracker</p>
-        <h1 className="text-2xl font-bold text-foreground">Resonance Syllabus</h1>
+        <h1 className="text-2xl font-bold text-foreground">BASE PU Syllabus</h1>
         <p className="text-sm text-muted-foreground mt-1">Click any chapter to cycle its status</p>
       </div>
 

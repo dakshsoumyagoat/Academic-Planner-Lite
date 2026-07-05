@@ -76,7 +76,7 @@ function TestFormDialog({
             <Input
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="e.g. Resonance DPP Test 12"
+              placeholder="e.g. BASE PU DPP Test 12"
               required
               className="bg-background border-input"
             />

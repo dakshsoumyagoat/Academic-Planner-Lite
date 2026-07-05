@@ -32,7 +32,7 @@ A study-planning web app for students prepping for JEE Main/Advanced — tracks 
 ## Architecture decisions
 
 - True multi-user: every user has isolated tasks, tests, monthly goals, syllabus progress, and settings (each table has a `userId` FK). `holidays` (Bengaluru public holidays) is the one shared/global table since it isn't personal data.
-- Registration (`POST /api/auth/register`) seeds a new user's default settings row, full syllabus chapter list, and the template Resonance test schedule synchronously — not lazily via an "auto-seed if table is empty" check, since that pattern breaks once data is per-user.
+- Registration (`POST /api/auth/register`) seeds a new user's default settings row, full syllabus chapter list, and the template BASE PU test schedule synchronously — not lazily via an "auto-seed if table is empty" check, since that pattern breaks once data is per-user.
 - Accent color/theme defaults live in three places kept in sync: DB schema default, settings preset list, and `index.css`/manifest — update all three together when changing brand color.
 
 ## Product
