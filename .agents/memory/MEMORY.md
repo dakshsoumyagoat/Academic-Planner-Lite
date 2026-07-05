@@ -1,0 +1,1 @@
+- [JEE Planner multi-user conversion](jee-planner-multiuser.md) — how per-user data isolation, seeding, and drizzle-kit push quirks were handled when converting from single-user auth.

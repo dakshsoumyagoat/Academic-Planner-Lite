@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, testsTable } from "@workspace/db";
-import { eq, ilike, gte } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import {
   ListTestsQueryParams,
   CreateTestBody,
@@ -20,11 +20,10 @@ router.get("/", async (req, res) => {
   }
   const { search, upcoming } = parsed.data;
 
-  let query = db.select().from(testsTable);
   const today = new Date().toISOString().split("T")[0];
 
-  let tests = await query.orderBy(testsTable.date);
-  
+  let tests = await db.select().from(testsTable).where(eq(testsTable.userId, req.session.userId!)).orderBy(testsTable.date);
+
   if (upcoming) {
     tests = tests.filter(t => t.date >= today);
   }
@@ -42,7 +41,7 @@ router.post("/", async (req, res) => {
     res.status(400).json({ error: "Invalid body" });
     return;
   }
-  const [test] = await db.insert(testsTable).values(parsed.data).returning();
+  const [test] = await db.insert(testsTable).values({ ...parsed.data, userId: req.session.userId! }).returning();
   res.status(201).json(test);
 });
 
@@ -52,7 +51,7 @@ router.get("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid params" });
     return;
   }
-  const [test] = await db.select().from(testsTable).where(eq(testsTable.id, parsed.data.id));
+  const [test] = await db.select().from(testsTable).where(and(eq(testsTable.id, parsed.data.id), eq(testsTable.userId, req.session.userId!)));
   if (!test) {
     res.status(404).json({ error: "Not found" });
     return;
@@ -71,7 +70,7 @@ router.patch("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid body" });
     return;
   }
-  const [existing] = await db.select().from(testsTable).where(eq(testsTable.id, parsedParams.data.id));
+  const [existing] = await db.select().from(testsTable).where(and(eq(testsTable.id, parsedParams.data.id), eq(testsTable.userId, req.session.userId!)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;
@@ -86,7 +85,7 @@ router.delete("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid params" });
     return;
   }
-  const [existing] = await db.select().from(testsTable).where(eq(testsTable.id, parsed.data.id));
+  const [existing] = await db.select().from(testsTable).where(and(eq(testsTable.id, parsed.data.id), eq(testsTable.userId, req.session.userId!)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;

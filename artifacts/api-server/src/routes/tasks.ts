@@ -21,7 +21,7 @@ router.get("/", async (req, res) => {
   }
   const { date, subject, completed, search } = parsed.data;
 
-  const conditions = [];
+  const conditions = [eq(tasksTable.userId, req.session.userId!)];
   if (date) conditions.push(eq(tasksTable.dueDate, date));
   if (subject) conditions.push(eq(tasksTable.subject, subject));
   if (completed !== undefined) conditions.push(eq(tasksTable.completed, completed));
@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
     );
   }
 
-  const tasks = await db.select().from(tasksTable).where(conditions.length ? and(...conditions) : undefined).orderBy(tasksTable.dueDate);
+  const tasks = await db.select().from(tasksTable).where(and(...conditions)).orderBy(tasksTable.dueDate);
   res.json(tasks);
 });
 
@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
     res.status(400).json({ error: "Invalid body" });
     return;
   }
-  const [task] = await db.insert(tasksTable).values(parsed.data).returning();
+  const [task] = await db.insert(tasksTable).values({ ...parsed.data, userId: req.session.userId! }).returning();
   res.status(201).json(task);
 });
 
@@ -55,7 +55,7 @@ router.get("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid params" });
     return;
   }
-  const [task] = await db.select().from(tasksTable).where(eq(tasksTable.id, parsed.data.id));
+  const [task] = await db.select().from(tasksTable).where(and(eq(tasksTable.id, parsed.data.id), eq(tasksTable.userId, req.session.userId!)));
   if (!task) {
     res.status(404).json({ error: "Not found" });
     return;
@@ -69,7 +69,7 @@ router.patch("/:id/toggle", async (req, res) => {
     res.status(400).json({ error: "Invalid params" });
     return;
   }
-  const [existing] = await db.select().from(tasksTable).where(eq(tasksTable.id, parsed.data.id));
+  const [existing] = await db.select().from(tasksTable).where(and(eq(tasksTable.id, parsed.data.id), eq(tasksTable.userId, req.session.userId!)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;
@@ -89,7 +89,7 @@ router.patch("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid body" });
     return;
   }
-  const [existing] = await db.select().from(tasksTable).where(eq(tasksTable.id, parsedParams.data.id));
+  const [existing] = await db.select().from(tasksTable).where(and(eq(tasksTable.id, parsedParams.data.id), eq(tasksTable.userId, req.session.userId!)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;
@@ -104,7 +104,7 @@ router.delete("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid params" });
     return;
   }
-  const [existing] = await db.select().from(tasksTable).where(eq(tasksTable.id, parsed.data.id));
+  const [existing] = await db.select().from(tasksTable).where(and(eq(tasksTable.id, parsed.data.id), eq(tasksTable.userId, req.session.userId!)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;

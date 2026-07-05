@@ -7,16 +7,14 @@ interface AuthUser {
 
 interface AuthStatus {
   loggedIn: boolean;
-  hasUser: boolean;
   username?: string;
 }
 
 interface AuthContextValue {
   user: AuthUser | null;
-  hasUser: boolean;
   loading: boolean;
   login: (username: string, password: string) => Promise<string | null>;
-  setup: (username: string, password: string) => Promise<string | null>;
+  register: (username: string, password: string) => Promise<string | null>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -25,14 +23,12 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [hasUser, setHasUser] = useState(false);
   const [loading, setLoading] = useState(true);
 
   async function refresh() {
     try {
       const res = await fetch("/api/auth/status", { credentials: "include" });
       const data: AuthStatus = await res.json();
-      setHasUser(data.hasUser);
       if (data.loggedIn && data.username) {
         const meRes = await fetch("/api/auth/me", { credentials: "include" });
         if (meRes.ok) {
@@ -63,21 +59,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = await res.json();
     if (!res.ok) return data.error ?? "Login failed";
     setUser(data);
-    setHasUser(true);
     return null;
   }
 
-  async function setup(username: string, password: string): Promise<string | null> {
-    const res = await fetch("/api/auth/setup", {
+  async function register(username: string, password: string): Promise<string | null> {
+    const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({ username, password }),
     });
     const data = await res.json();
-    if (!res.ok) return data.error ?? "Setup failed";
+    if (!res.ok) return data.error ?? "Registration failed";
     setUser(data);
-    setHasUser(true);
     return null;
   }
 
@@ -87,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, hasUser, loading, login, setup, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   );

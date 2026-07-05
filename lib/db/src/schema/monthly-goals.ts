@@ -1,9 +1,11 @@
 import { pgTable, serial, text, boolean, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+import { usersTable } from "./users";
 
 export const monthlyGoalsTable = pgTable("monthly_goals", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   subject: text("subject").notNull().default("Custom"),
   month: integer("month").notNull(),
@@ -14,6 +16,6 @@ export const monthlyGoalsTable = pgTable("monthly_goals", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const insertMonthlyGoalSchema = createInsertSchema(monthlyGoalsTable).omit({ id: true, createdAt: true });
+export const insertMonthlyGoalSchema = createInsertSchema(monthlyGoalsTable).omit({ id: true, userId: true, createdAt: true });
 export type InsertMonthlyGoal = z.infer<typeof insertMonthlyGoalSchema>;
 export type MonthlyGoal = typeof monthlyGoalsTable.$inferSelect;

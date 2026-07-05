@@ -8,27 +8,35 @@ import { KeyRound } from "lucide-react";
 import logo from "@/assets/logo.png";
 
 export default function Login() {
-  const { login, setup, hasUser } = useAuth();
+  const { login, register } = useAuth();
+  const [mode, setMode] = useState<"login" | "register">("login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const isSetup = !hasUser;
+  const isRegister = mode === "register";
+
+  function switchMode(next: "login" | "register") {
+    setMode(next);
+    setError(null);
+    setPassword("");
+    setConfirm("");
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
 
-    if (isSetup) {
+    if (isRegister) {
       if (password.length < 4) { setError("Password must be at least 4 characters"); return; }
       if (password !== confirm) { setError("Passwords don't match"); return; }
     }
 
     setLoading(true);
-    const err = isSetup
-      ? await setup(username.trim(), password)
+    const err = isRegister
+      ? await register(username.trim(), password)
       : await login(username.trim(), password);
     setLoading(false);
 
@@ -44,11 +52,32 @@ export default function Login() {
           </div>
           <h1 className="text-2xl font-bold text-foreground">JEE Planner</h1>
           <p className="text-sm text-muted-foreground">
-            {isSetup ? "Create your account to get started" : "Sign in to continue"}
+            {isRegister ? "Create your account to get started" : "Sign in to continue"}
           </p>
         </div>
 
-        <Card className="bg-card border-border p-6">
+        <Card className="bg-card border-border p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1">
+            <button
+              type="button"
+              onClick={() => switchMode("login")}
+              className={`text-sm font-medium rounded-sm py-1.5 transition-colors ${
+                mode === "login" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Log In
+            </button>
+            <button
+              type="button"
+              onClick={() => switchMode("register")}
+              className={`text-sm font-medium rounded-sm py-1.5 transition-colors ${
+                mode === "register" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+              }`}
+            >
+              Sign Up
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="username">Username</Label>
@@ -71,13 +100,13 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                autoComplete={isSetup ? "new-password" : "current-password"}
+                autoComplete={isRegister ? "new-password" : "current-password"}
                 required
                 className="bg-background border-input"
               />
             </div>
 
-            {isSetup && (
+            {isRegister && (
               <div className="space-y-1.5">
                 <Label htmlFor="confirm">Confirm Password</Label>
                 <Input
@@ -101,15 +130,13 @@ export default function Login() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               <KeyRound className="h-4 w-4 mr-2" />
-              {loading ? "Please wait…" : isSetup ? "Create Account" : "Sign In"}
+              {loading ? "Please wait…" : isRegister ? "Create Account" : "Sign In"}
             </Button>
           </form>
         </Card>
 
         <p className="text-center text-xs text-muted-foreground">
-          {isSetup
-            ? "Your data is stored privately on this server"
-            : "Use the same credentials on any device"}
+          Each account has its own private tasks, tests, and progress
         </p>
       </div>
     </div>

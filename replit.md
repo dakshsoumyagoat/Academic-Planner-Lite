@@ -1,6 +1,6 @@
-# [Project name]
+# JEE Planner
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A study-planning web app for students prepping for JEE Main/Advanced — tracks daily tasks, upcoming tests, monthly goals, and syllabus progress against the exam countdown. Supports multiple independent user accounts, each with fully isolated data.
 
 ## Run & Operate
 
@@ -22,15 +22,25 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- DB schema: `lib/db/src/schema/*.ts` (tasks, tests, monthly-goals, syllabus, settings, holidays, users)
+- API routes: `artifacts/api-server/src/routes/*.ts`
+- New-user seed data (default settings, syllabus chapters, template test schedule): `artifacts/api-server/src/lib/seed-data.ts`
+- OpenAPI contract: `lib/api-spec/openapi.yaml` → generated hooks/schemas in `lib/api-client-react` / `lib/api-zod`
+- Frontend auth: `artifacts/jee-planner/src/lib/auth.tsx`, login UI: `artifacts/jee-planner/src/pages/login.tsx`
+- Session store: Postgres `session` table (via `connect-pg-simple`), created manually — not part of the drizzle schema
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- True multi-user: every user has isolated tasks, tests, monthly goals, syllabus progress, and settings (each table has a `userId` FK). `holidays` (Bengaluru public holidays) is the one shared/global table since it isn't personal data.
+- Registration (`POST /api/auth/register`) seeds a new user's default settings row, full syllabus chapter list, and the template Resonance test schedule synchronously — not lazily via an "auto-seed if table is empty" check, since that pattern breaks once data is per-user.
+- Accent color/theme defaults live in three places kept in sync: DB schema default, settings preset list, and `index.css`/manifest — update all three together when changing brand color.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Dashboard, Calendar, Tasks, Tests, Monthly Goals, Syllabus Tracker, Search, Settings
+- Username/password auth with self-service sign up (no invite/admin gate)
+- Offline/PWA support with a versioned service worker cache
+- Custom accent color theming (default lime `#4aff00`), dark mode by default
 
 ## User preferences
 
@@ -38,7 +48,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `drizzle-kit push` will always flag the `session` table as a pending destructive delete (it's managed by `connect-pg-simple`, not declared in the drizzle schema) and then abort non-interactively. This is expected — verify schema-vs-DB sync with direct `psql` queries instead of relying on `push`'s output.
+- Bump the service worker cache version in `artifacts/jee-planner/public/sw.js` after any static asset/theme/logo change, or the PWA serves stale content.
 
 ## Pointers
 

@@ -1,7 +1,6 @@
-import { db, syllabusTable } from "@workspace/db";
-import { count } from "drizzle-orm";
+import { db, settingsTable, syllabusTable, testsTable } from "@workspace/db";
 
-const CHAPTERS: { subject: string; track: string; chapter: string }[] = [
+export const SYLLABUS_CHAPTERS: { subject: string; track: string; chapter: string }[] = [
   // Physics Track 01
   { subject: "Physics", track: "01", chapter: "Vectors" },
   { subject: "Physics", track: "01", chapter: "Rectilinear Motion" },
@@ -13,7 +12,6 @@ const CHAPTERS: { subject: string; track: string; chapter: string }[] = [
   { subject: "Physics", track: "01", chapter: "Rigid Body Mechanics" },
   { subject: "Physics", track: "01", chapter: "Simple Harmonic Motion" },
   { subject: "Physics", track: "01", chapter: "Gravitation" },
-
   // Physics Track 02
   { subject: "Physics", track: "02", chapter: "Basic Mathematics" },
   { subject: "Physics", track: "02", chapter: "Units and Measurements, Errors, and Experiments" },
@@ -28,7 +26,6 @@ const CHAPTERS: { subject: string; track: string; chapter: string }[] = [
   { subject: "Physics", track: "02", chapter: "Fluid Mechanics" },
   { subject: "Physics", track: "02", chapter: "Transverse Waves (String Waves)" },
   { subject: "Physics", track: "02", chapter: "Longitudinal Waves (Sound Waves)" },
-
   // Chemistry Track 01
   { subject: "Chemistry", track: "01", chapter: "Atomic Structure" },
   { subject: "Chemistry", track: "01", chapter: "Chemical Bonding" },
@@ -40,7 +37,6 @@ const CHAPTERS: { subject: string; track: string; chapter: string }[] = [
   { subject: "Chemistry", track: "01", chapter: "Ionic Equilibrium" },
   { subject: "Chemistry", track: "01", chapter: "Redox Reactions" },
   { subject: "Chemistry", track: "01", chapter: "Equivalent Concept and Volumetric Analysis" },
-
   // Chemistry Track 02
   { subject: "Chemistry", track: "02", chapter: "Some Basic Concepts of Chemistry (Mole Concept)" },
   { subject: "Chemistry", track: "02", chapter: "Periodic Classification" },
@@ -54,7 +50,6 @@ const CHAPTERS: { subject: string; track: string; chapter: string }[] = [
   { subject: "Chemistry", track: "02", chapter: "s-Block Elements" },
   { subject: "Chemistry", track: "02", chapter: "Environmental Chemistry" },
   { subject: "Chemistry", track: "02", chapter: "p-Block Elements" },
-
   // Maths Track 01
   { subject: "Maths", track: "01", chapter: "Basic Maths" },
   { subject: "Maths", track: "01", chapter: "Trigonometric Ratios and Identities" },
@@ -69,7 +64,6 @@ const CHAPTERS: { subject: string; track: string; chapter: string }[] = [
   { subject: "Maths", track: "01", chapter: "Statistics" },
   { subject: "Maths", track: "01", chapter: "Limits" },
   { subject: "Maths", track: "01", chapter: "Methods of Differentiation" },
-
   // Maths Track 02
   { subject: "Maths", track: "02", chapter: "Sets" },
   { subject: "Maths", track: "02", chapter: "Relations" },
@@ -84,19 +78,55 @@ const CHAPTERS: { subject: string; track: string; chapter: string }[] = [
   { subject: "Maths", track: "02", chapter: "Probability" },
 ];
 
-async function main() {
-  const [{ value: existing }] = await db.select({ value: count() }).from(syllabusTable);
-  if (Number(existing) > 0) {
-    console.log(`Syllabus already seeded (${existing} chapters). Skipping.`);
-    process.exit(0);
-  }
+export const TEST_TEMPLATES: { name: string; date: string; time: string; type: string; notes: string | null }[] = [
+  { name: "Weekly Test - Physics 1", date: "2026-04-27", time: "09:00", type: "coaching", notes: null },
+  { name: "Weekly Test - Chemistry 1", date: "2026-05-04", time: "09:00", type: "coaching", notes: null },
+  { name: "Weekly Test - Maths 1", date: "2026-05-11", time: "09:00", type: "coaching", notes: null },
+  { name: "Main Test 1", date: "2026-05-24", time: "09:00", type: "mock", notes: null },
+  { name: "Weekly Test - Physics 2", date: "2026-06-01", time: "09:00", type: "coaching", notes: null },
+  { name: "Weekly Test - Chemistry 2", date: "2026-06-08", time: "09:00", type: "coaching", notes: null },
+  { name: "Main Test 2", date: "2026-06-21", time: "09:00", type: "mock", notes: null },
+  { name: "Weekly Test - Maths 2", date: "2026-06-29", time: "09:00", type: "coaching", notes: null },
+  { name: "Weekly Test - Physics 3", date: "2026-07-06", time: "09:00", type: "coaching", notes: null },
+  { name: "Main Test 3", date: "2026-07-19", time: "09:00", type: "mock", notes: null },
+  { name: "Advanced Test 1 (One paper)", date: "2026-07-19", time: "14:00", type: "jee", notes: "One paper" },
+  { name: "Weekly Test - Chemistry 3", date: "2026-07-27", time: "09:00", type: "coaching", notes: null },
+  { name: "1st Quarterly Exam & CET-1", date: "2026-08-03", time: "09:00", type: "school", notes: "3 Aug – 7 Aug 2026" },
+  { name: "Main Test 4", date: "2026-08-23", time: "09:00", type: "mock", notes: null },
+  { name: "Advanced Test 2 (One paper)", date: "2026-08-23", time: "14:00", type: "jee", notes: "One paper" },
+  { name: "Weekly Test - Maths 3", date: "2026-08-31", time: "09:00", type: "coaching", notes: null },
+  { name: "Weekly Test - Physics 4", date: "2026-09-07", time: "09:00", type: "coaching", notes: null },
+  { name: "Main Test 5", date: "2026-09-19", time: "09:00", type: "mock", notes: null },
+  { name: "Advanced Test 3 (Two papers)", date: "2026-09-20", time: "09:00", type: "jee", notes: "Two papers" },
+  { name: "Midterm Exam & CET-2", date: "2026-09-25", time: "09:00", type: "school", notes: "25 Sep – 9 Oct 2026" },
+  { name: "Weekly Test - Chemistry 4", date: "2026-11-02", time: "09:00", type: "coaching", notes: null },
+  { name: "Main Test 6", date: "2026-11-21", time: "09:00", type: "mock", notes: null },
+  { name: "Advanced Test 4 (Two papers)", date: "2026-11-22", time: "09:00", type: "jee", notes: "Two papers" },
+  { name: "Weekly Test - Maths 4", date: "2026-11-30", time: "09:00", type: "coaching", notes: null },
+  { name: "2nd Quarterly Exam & CET-3", date: "2026-12-10", time: "09:00", type: "school", notes: "10 Dec – 15 Dec 2026" },
+  { name: "Weekly Test - Physics 5", date: "2026-12-21", time: "09:00", type: "coaching", notes: null },
+  { name: "Main Test 7", date: "2027-01-02", time: "09:00", type: "mock", notes: null },
+  { name: "Advanced Test 5 (Two papers)", date: "2027-01-03", time: "09:00", type: "jee", notes: "Two papers" },
+  { name: "Weekly Test - Chemistry 5", date: "2027-01-11", time: "09:00", type: "coaching", notes: null },
+  { name: "Weekly Test - Maths 5", date: "2027-01-18", time: "09:00", type: "coaching", notes: null },
+  { name: "Main Test 8", date: "2027-01-27", time: "09:00", type: "mock", notes: null },
+  { name: "Advanced Test 6 (Two papers)", date: "2027-01-28", time: "09:00", type: "jee", notes: "Two papers" },
+];
 
-  await db.insert(syllabusTable).values(CHAPTERS.map((c) => ({ ...c, status: "not_started" as const })));
-  console.log(`Seeded ${CHAPTERS.length} syllabus chapters.`);
-  process.exit(0);
+export async function seedNewUserData(userId: number) {
+  await Promise.all([
+    db.insert(settingsTable).values({
+      userId,
+      theme: "dark",
+      accentColor: "#4aff00",
+      jeeMainDate: "2027-01-22",
+      jeeAdvancedDate: "2027-05-18",
+    }),
+    db.insert(syllabusTable).values(
+      SYLLABUS_CHAPTERS.map((c) => ({ ...c, userId, status: "not_started" as const })),
+    ),
+    db.insert(testsTable).values(
+      TEST_TEMPLATES.map((t) => ({ ...t, userId })),
+    ),
+  ]);
 }
-
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
