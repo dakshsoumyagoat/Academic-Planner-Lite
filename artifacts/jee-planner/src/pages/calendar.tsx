@@ -57,9 +57,9 @@ export default function Calendar() {
 
   useEffect(() => {
     fetch("/api/holidays", { credentials: "include" })
-      .then((r) => r.json())
-      .then(setHolidays)
-      .catch(() => {});
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setHolidays(Array.isArray(data) ? data : []))
+      .catch(() => setHolidays([]));
   }, []);
 
   const monthStart = startOfMonth(currentMonth);
