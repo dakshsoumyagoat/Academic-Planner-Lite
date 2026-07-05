@@ -42,10 +42,6 @@ function ThemeAndAccentInit() {
   const { data: settings } = useGetSettings({ query: { queryKey: getGetSettingsQueryKey() } });
 
   useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
-
-  useEffect(() => {
     if (!settings) return;
     document.documentElement.classList.toggle("dark", settings.theme === "dark");
     applyAccentColor(settings.accentColor);
@@ -80,6 +76,10 @@ function AppInner() {
 }
 
 function App() {
+  useEffect(() => {
+    document.documentElement.classList.add("dark");
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
