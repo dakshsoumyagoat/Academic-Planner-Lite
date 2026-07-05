@@ -1,4 +1,4 @@
-const CACHE_NAME = "jee-planner-v3";
+const CACHE_NAME = "jee-planner-v4";
 const STATIC_ASSETS = ["/"];
 
 self.addEventListener("install", (event) => {

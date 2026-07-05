@@ -18,6 +18,7 @@ import { Button } from "./ui/button";
 import { getIsOnline } from "@/lib/sync-fetch";
 import { getPendingCount } from "@/lib/sync-engine";
 import { useAuth } from "@/lib/auth";
+import logo from "@/assets/logo.png";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -54,7 +55,10 @@ export function Layout({ children }: LayoutProps) {
       {/* Sidebar */}
       <aside className="hidden md:flex w-64 flex-col bg-sidebar border-r border-sidebar-border">
         <div className="h-16 flex items-center px-6 border-b border-sidebar-border justify-between">
-          <h1 className="text-lg font-semibold text-primary tracking-tight">JEE Planner</h1>
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="JEE Planner" className="w-7 h-7 rounded-md object-cover" />
+            <h1 className="text-lg font-semibold text-primary tracking-tight">JEE Planner</h1>
+          </div>
           <div className="flex items-center gap-1.5">
             {online ? (
               <Wifi className="h-3.5 w-3.5 text-emerald-400" />
@@ -113,7 +117,8 @@ export function Layout({ children }: LayoutProps) {
           <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             <Menu className="h-5 w-5" />
           </Button>
-          <h1 className="ml-4 text-lg font-semibold text-primary tracking-tight">JEE Planner</h1>
+          <img src={logo} alt="JEE Planner" className="ml-4 w-7 h-7 rounded-md object-cover" />
+          <h1 className="ml-2 text-lg font-semibold text-primary tracking-tight">JEE Planner</h1>
           <button onClick={logout} className="ml-auto p-2 text-muted-foreground hover:text-destructive" title="Sign out">
             <LogOut className="h-4 w-4" />
           </button>

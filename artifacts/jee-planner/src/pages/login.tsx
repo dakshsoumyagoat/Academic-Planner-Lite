@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { BookOpen, KeyRound } from "lucide-react";
+import { KeyRound } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 export default function Login() {
   const { login, setup, hasUser } = useAuth();
@@ -38,8 +39,8 @@ export default function Login() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
-            <BookOpen className="h-6 w-6 text-primary" />
+          <div className="w-16 h-16 rounded-xl overflow-hidden flex items-center justify-center mx-auto">
+            <img src={logo} alt="JEE Planner" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">JEE Planner</h1>
           <p className="text-sm text-muted-foreground">
