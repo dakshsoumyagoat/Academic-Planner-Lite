@@ -1,1 +1,2 @@
 - [JEE Planner multi-user conversion](jee-planner-multiuser.md) — how per-user data isolation, seeding, and drizzle-kit push quirks were handled when converting from single-user auth.
+- [Deploying off Replit to a single-service host](jee-planner-render-deploy.md) — how a two-service Replit app (separate frontend/API) was adapted to run as one Node process for free-tier hosts like Render.

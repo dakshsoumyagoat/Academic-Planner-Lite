@@ -66,4 +66,19 @@ See `replit.md` for architecture decisions, gotchas, and where things live in mo
 
 ## Note on hosting
 
-This app requires a running backend and database, so it can't be hosted on static-only platforms like GitHub Pages. Use Replit's deployment/publishing to make it available at a live URL.
+This app requires a running backend and database, so it can't be hosted on static-only platforms like GitHub Pages. Use Replit's deployment/publishing to make it available at a live URL, or deploy it to Render (see below).
+
+## Deploying to Render (free tier)
+
+A `render.yaml` at the repo root is configured for Render's "Blueprint" deploy, which provisions a single free web service plus a free Postgres database:
+
+1. Push this repo to GitHub.
+2. In Render, choose **New > Blueprint** and point it at the repo — it will read `render.yaml` automatically.
+3. Render provisions a free Postgres database (`jee-planner-db`) and a free web service, wiring `DATABASE_URL` and a generated `SESSION_SECRET` automatically.
+4. After the first deploy, push the database schema once: `DATABASE_URL=<your Render DB URL> pnpm --filter @workspace/db run push` (run this from your local machine/Replit, pointed at the Render database).
+
+Notes:
+
+- The web service builds and serves the frontend and API together as a single Node process (unlike the two-service setup used on Replit's shared proxy), so it works within Render's one-free-service constraint.
+- Render's free web service spins down after ~15 minutes of inactivity, so the first request after idle time will be slow (cold start).
+- Render's free Postgres database expires after 90 days unless upgraded — plan to migrate or upgrade before then.
