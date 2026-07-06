@@ -117,7 +117,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div>
-              {data?.todayTasks?.map((task) => (
+              {data?.todayTasks?.map((task: any) => (
                 <TaskRow key={task.id} task={task} onToggle={(id) => toggleTask.mutate({ id })} />
               ))}
             </div>
@@ -140,7 +140,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="space-y-2">
-              {data?.upcomingTests?.map((test) => (
+              {data?.upcomingTests?.map((test: any) => (
                 <div key={test.id} className="flex items-center gap-3 py-2.5 border-b border-border/50 last:border-0">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{test.name}</p>
@@ -168,7 +168,7 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground py-4 text-center">No tasks due this week</p>
         ) : (
           <div>
-            {data?.weekTasks?.map((task) => (
+            {data?.weekTasks?.map((task: any) => (
               <TaskRow key={task.id} task={task} onToggle={(id) => toggleTask.mutate({ id })} />
             ))}
           </div>

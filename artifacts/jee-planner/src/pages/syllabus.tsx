@@ -96,17 +96,17 @@ export default function Syllabus() {
     setExpandedTracks(new Set([`${s}-01`, `${s}-02`]));
   }
 
-  const subjectChapters = chapters.filter((c) => c.subject === activeSubject);
+  const subjectChapters = chapters.filter((c: any) => c.subject === activeSubject);
   const tracks = ["01", "02"];
 
   const subjectStats = SUBJECTS.reduce<Record<string, { done: number; total: number }>>((acc, s) => {
-    const sc = chapters.filter((c) => c.subject === s);
-    acc[s] = { done: sc.filter((c) => c.status === "done").length, total: sc.length };
+    const sc = chapters.filter((c: any) => c.subject === s);
+    acc[s] = { done: sc.filter((c: any) => c.status === "done").length, total: sc.length };
     return acc;
   }, {});
 
   const overall = chapters.length > 0
-    ? Math.round((chapters.filter((c) => c.status === "done").length / chapters.length) * 100)
+    ? Math.round((chapters.filter((c: any) => c.status === "done").length / chapters.length) * 100)
     : 0;
 
   return (
@@ -179,12 +179,12 @@ export default function Syllabus() {
       ) : (
         <div className="space-y-3">
           {tracks.map((track) => {
-            const trackChapters = subjectChapters.filter((c) => c.track === track);
+            const trackChapters = subjectChapters.filter((c: any) => c.track === track);
             if (trackChapters.length === 0) return null;
             const key = `${activeSubject}-${track}`;
             const expanded = expandedTracks.has(key);
-            const trackDone = trackChapters.filter((c) => c.status === "done").length;
-            const trackRevised = trackChapters.filter((c) => c.status === "revised").length;
+            const trackDone = trackChapters.filter((c: any) => c.status === "done").length;
+            const trackRevised = trackChapters.filter((c: any) => c.status === "revised").length;
             const trackTotal = trackChapters.length;
 
             return (
@@ -203,7 +203,7 @@ export default function Syllabus() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="flex gap-1">
-                      {trackChapters.map((c) => (
+                      {trackChapters.map((c: any) => (
                         <div key={c.id} className={`w-2 h-2 rounded-full ${STATUS_DOT[c.status as Status]}`} />
                       ))}
                     </div>
@@ -216,7 +216,7 @@ export default function Syllabus() {
                 {/* Chapter list */}
                 {expanded && (
                   <div className="divide-y divide-border/40 border-t border-border/40">
-                    {trackChapters.map((chapter) => {
+                    {trackChapters.map((chapter: any) => {
                       const status = chapter.status as Status;
                       return (
                         <button

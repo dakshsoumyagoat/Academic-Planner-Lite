@@ -247,7 +247,7 @@ export default function MonthlyGoals() {
           </div>
         ) : (
           <div className="divide-y divide-border/50">
-            {goals.map((goal) =>
+            {goals.map((goal: any) =>
               editingId === goal.id ? (
                 <form key={goal.id} onSubmit={(e) => handleSubmitEdit(e, goal.id)} className="p-4 space-y-3 bg-muted/30">
                   <input

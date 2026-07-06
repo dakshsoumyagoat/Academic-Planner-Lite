@@ -29,18 +29,36 @@ self.addEventListener("fetch", (event) => {
   // API requests: let the network handle it (sync-fetch will manage offline)
   if (url.pathname.startsWith("/api/")) return;
 
-  // Static assets: cache-first
+  // Static assets: cache-first strategy
   event.respondWith(
     caches.match(request).then((cached) => {
-      const fetchPromise = fetch(request).then((response) => {
-        if (response.ok) {
+      if (cached) {
+        // Return cached, but update in background
+        const fetchPromise = fetch(request).then((response) => {
+          if (response && response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        }).catch(() => null);
+        
+        return cached;
+      }
+
+      // Not cached, try network
+      return fetch(request).then((response) => {
+        if (response && response.ok) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
         }
         return response;
-      }).catch(() => cached);
-
-      return cached || fetchPromise;
+      }).catch(() => {
+        // Network failed and not cached - return offline page if available
+        if (request.destination === "document") {
+          return caches.match("/index.html").catch(() => new Response("Offline", { status: 503 }));
+        }
+        throw new TypeError("Failed to fetch");
+      });
     })
   );
 });

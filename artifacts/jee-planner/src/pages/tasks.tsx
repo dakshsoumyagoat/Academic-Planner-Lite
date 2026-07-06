@@ -208,7 +208,7 @@ export default function Tasks() {
     setEditTask(null);
   }
 
-  const filteredTasks = (tasks ?? []).filter((t) => {
+  const filteredTasks = (tasks ?? []).filter((t: any) => {
     if (priorityFilter !== "all" && t.priority !== priorityFilter) return false;
     return true;
   });
@@ -274,7 +274,7 @@ export default function Tasks() {
         </Card>
       ) : (
         <Card className="bg-card border-border divide-y divide-border/50">
-          {filteredTasks.map((task) => (
+          {filteredTasks.map((task: any) => (
             <div key={task.id} className="flex items-start gap-3 px-4 py-3 group hover:bg-muted/30 transition-colors">
               <button
                 onClick={() => toggleTask.mutate({ id: task.id })}

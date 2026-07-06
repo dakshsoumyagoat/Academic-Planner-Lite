@@ -160,11 +160,11 @@ export default function Tests() {
     setEditTest(null);
   }
 
-  const filtered = (tests ?? []).filter((t) => typeFilter === "all" || t.type === typeFilter);
+  const filtered = (tests ?? []).filter((t: any) => typeFilter === "all" || t.type === typeFilter);
 
   const today = new Date().toISOString().split("T")[0];
-  const upcoming = filtered.filter((t) => t.date >= today);
-  const past = filtered.filter((t) => t.date < today);
+  const upcoming = filtered.filter((t: any) => t.date >= today);
+  const past = filtered.filter((t: any) => t.date < today);
 
   return (
     <div className="space-y-5 max-w-4xl">
@@ -209,7 +209,7 @@ export default function Tests() {
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-2">Upcoming</p>
               <Card className="bg-card border-border divide-y divide-border/50">
-                {upcoming.map((test) => (
+                {upcoming.map((test: any) => (
                   <TestRow key={test.id} test={test} onEdit={setEditTest} onDelete={(id) => deleteTest.mutate({ id })} />
                 ))}
               </Card>
@@ -219,7 +219,7 @@ export default function Tests() {
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-2">Past</p>
               <Card className="bg-card border-border divide-y divide-border/50 opacity-70">
-                {past.map((test) => (
+                {past.map((test: any) => (
                   <TestRow key={test.id} test={test} onEdit={setEditTest} onDelete={(id) => deleteTest.mutate({ id })} />
                 ))}
               </Card>

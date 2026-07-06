@@ -68,7 +68,7 @@ export default function Search() {
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-2">Tasks ({tasks.length})</p>
           <Card className="bg-card border-border divide-y divide-border/50">
-            {tasks.map((task) => (
+            {tasks.map((task: any) => (
               <div key={task.id} className="flex items-start gap-3 px-4 py-3">
                 <div className="mt-0.5">
                   {task.completed ? <CheckCircle2 className="h-4 w-4 text-primary" /> : <Circle className="h-4 w-4 text-muted-foreground" />}
@@ -95,7 +95,7 @@ export default function Search() {
         <div>
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-2">Tests ({tests.length})</p>
           <Card className="bg-card border-border divide-y divide-border/50">
-            {tests.map((test) => (
+            {tests.map((test: any) => (
               <div key={test.id} className="flex items-center gap-3 px-4 py-3">
                 <ClipboardList className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 <div className="flex-1 min-w-0">

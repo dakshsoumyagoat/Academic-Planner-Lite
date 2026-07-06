@@ -67,15 +67,15 @@ export default function Calendar() {
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   const tasksByDate: Record<string, any[]> = {};
-  (tasks ?? []).forEach((t) => {
+  (tasks ?? []).forEach((t: any) => {
     if (!tasksByDate[t.dueDate]) tasksByDate[t.dueDate] = [];
-    tasksByDate[t.dueDate].push(t);
+    tasksByDate[t.dueDate]?.push(t);
   });
 
   const testsByDate: Record<string, any[]> = {};
-  (tests ?? []).forEach((t) => {
+  (tests ?? []).forEach((t: any) => {
     if (!testsByDate[t.date]) testsByDate[t.date] = [];
-    testsByDate[t.date].push(t);
+    testsByDate[t.date]?.push(t);
   });
 
   const holidaysByDate: Record<string, Holiday[]> = {};
@@ -173,13 +173,13 @@ export default function Calendar() {
                     {isHoliday && (
                       <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-primary-foreground/70" : "bg-rose-400"}`} />
                     )}
-                    {dayTests.slice(0, 2).map((t, idx) => (
+                    {dayTests.slice(0, 2).map((t: any, idx: any) => (
                       <span
                         key={`test-${idx}`}
                         className={`w-1.5 h-1.5 rounded-sm ${isSelected ? "bg-primary-foreground/70" : (testTypeDot[t.type] || "bg-indigo-400")}`}
                       />
                     ))}
-                    {dayTasks.slice(0, 2).map((t, idx) => (
+                    {dayTasks.slice(0, 2).map((t: any, idx: any) => (
                       <span
                         key={`task-${idx}`}
                         className={`w-1.5 h-1.5 rounded-full ${isSelected ? "bg-primary-foreground/70" : (subjectDot[t.subject] || "bg-purple-400")}`}
@@ -255,7 +255,7 @@ export default function Calendar() {
                 <Card className="bg-card border-border p-3">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-2">Tests</p>
                   <div className="space-y-2">
-                    {selectedTests.map((test) => (
+                    {selectedTests.map((test: any) => (
                       <div key={test.id} className="flex items-start gap-2">
                         <ClipboardList className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
@@ -276,7 +276,7 @@ export default function Calendar() {
                 <Card className="bg-card border-border p-3">
                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mb-2">Tasks</p>
                   <div className="space-y-2">
-                    {selectedTasks.map((task) => (
+                    {selectedTasks.map((task: any) => (
                       <div key={task.id} className="flex items-start gap-2">
                         {task.completed
                           ? <CheckCircle2 className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
