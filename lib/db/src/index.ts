@@ -1,16 +1,27 @@
 import dotenv from "dotenv";
 import path from "path";
-import { fileURLToPath } from "url";
+import fs from "fs";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import * as schema from "./schema";
 
 const { Pool } = pg;
 
-// Load environment variables from root .env.development.local
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.resolve(__dirname, "../../../..");
-dotenv.config({ path: path.join(rootDir, ".env.development.local") });
+// Load environment variables from .env.development.local at project root
+// Try multiple locations to find the env file
+const envLocations = [
+  path.join(process.cwd(), ".env.development.local"),
+  path.join(process.cwd(), "..", ".env.development.local"),
+  path.join(process.cwd(), "../..", ".env.development.local"),
+  "/.env.development.local",
+];
+
+for (const envPath of envLocations) {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+    break;
+  }
+}
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
