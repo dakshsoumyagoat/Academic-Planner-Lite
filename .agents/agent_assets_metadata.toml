@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "Hm3dhGOwiL3FaypVQJbq5"
+uri = "file://exports/jee_planner_backup.tar.gz"
+type = "unspecified"
+title = "JEE Planner Database Backup (SQL dump)"
