@@ -118,7 +118,7 @@ export default function Calendar() {
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => setCurrentMonth(new Date())}>
-              Today
+              Month
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
               <ChevronRight className="h-4 w-4" />
