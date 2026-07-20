@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  let tests = await db.select().from(testsTable).where(eq(testsTable.userId, req.session.userId!)).orderBy(testsTable.date);
+  let tests = await db.select().from(testsTable).where(eq(testsTable.userId, req.userId)).orderBy(testsTable.date);
 
   if (upcoming) {
     tests = tests.filter(t => t.date >= today);
@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
     res.status(400).json({ error: "Invalid body" });
     return;
   }
-  const [test] = await db.insert(testsTable).values({ ...parsed.data, userId: req.session.userId! }).returning();
+  const [test] = await db.insert(testsTable).values({ ...parsed.data, userId: req.userId }).returning();
   res.status(201).json(test);
 });
 
@@ -51,7 +51,7 @@ router.get("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid params" });
     return;
   }
-  const [test] = await db.select().from(testsTable).where(and(eq(testsTable.id, parsed.data.id), eq(testsTable.userId, req.session.userId!)));
+  const [test] = await db.select().from(testsTable).where(and(eq(testsTable.id, parsed.data.id), eq(testsTable.userId, req.userId)));
   if (!test) {
     res.status(404).json({ error: "Not found" });
     return;
@@ -70,7 +70,7 @@ router.patch("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid body" });
     return;
   }
-  const [existing] = await db.select().from(testsTable).where(and(eq(testsTable.id, parsedParams.data.id), eq(testsTable.userId, req.session.userId!)));
+  const [existing] = await db.select().from(testsTable).where(and(eq(testsTable.id, parsedParams.data.id), eq(testsTable.userId, req.userId)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;
@@ -85,7 +85,7 @@ router.delete("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid params" });
     return;
   }
-  const [existing] = await db.select().from(testsTable).where(and(eq(testsTable.id, parsed.data.id), eq(testsTable.userId, req.session.userId!)));
+  const [existing] = await db.select().from(testsTable).where(and(eq(testsTable.id, parsed.data.id), eq(testsTable.userId, req.userId)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;

@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
   const chapters = await db
     .select()
     .from(syllabusTable)
-    .where(eq(syllabusTable.userId, req.session.userId!))
+    .where(eq(syllabusTable.userId, req.userId))
     .orderBy(syllabusTable.id);
   res.json(chapters);
 });
@@ -28,7 +28,7 @@ router.patch("/:id", async (req, res) => {
   const [existing] = await db
     .select()
     .from(syllabusTable)
-    .where(and(eq(syllabusTable.id, parsedParams.data.id), eq(syllabusTable.userId, req.session.userId!)));
+    .where(and(eq(syllabusTable.id, parsedParams.data.id), eq(syllabusTable.userId, req.userId)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;

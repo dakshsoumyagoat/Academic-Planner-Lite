@@ -12,12 +12,10 @@ import {
   WifiOff,
   Target,
   BookMarked,
-  LogOut,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { getIsOnline } from "@/lib/sync-fetch";
 import { getPendingCount } from "@/lib/sync-engine";
-import { useAuth } from "@/lib/auth";
 import logo from "@/assets/logo.png";
 
 interface LayoutProps {
@@ -29,7 +27,6 @@ export function Layout({ children }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [online, setOnline] = useState(getIsOnline());
   const [pending, setPending] = useState(0);
-  const { user, logout } = useAuth();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -88,27 +85,6 @@ export function Layout({ children }: LayoutProps) {
             );
           })}
         </nav>
-
-        {/* User + logout */}
-        <div className="px-3 pb-4 border-t border-sidebar-border pt-3">
-          <div className="flex items-center gap-2 px-3 py-2">
-            <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-              <span className="text-xs font-semibold text-primary uppercase">
-                {user?.username?.slice(0, 1) ?? "?"}
-              </span>
-            </div>
-            <span className="text-sm text-sidebar-foreground font-medium truncate flex-1">
-              {user?.username}
-            </span>
-            <button
-              onClick={logout}
-              className="p-1 text-muted-foreground hover:text-destructive transition-colors"
-              title="Sign out"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
       </aside>
 
       {/* Main Content */}
@@ -119,9 +95,6 @@ export function Layout({ children }: LayoutProps) {
           </Button>
           <img src={logo} alt="JEE Planner" className="ml-4 w-7 h-7 rounded-md object-cover" />
           <h1 className="ml-2 text-lg font-semibold text-primary tracking-tight">JEE Planner</h1>
-          <button onClick={logout} className="ml-auto p-2 text-muted-foreground hover:text-destructive" title="Sign out">
-            <LogOut className="h-4 w-4" />
-          </button>
         </header>
 
         {isMobileMenuOpen && (

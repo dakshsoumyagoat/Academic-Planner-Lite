@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
   const goals = await db
     .select()
     .from(monthlyGoalsTable)
-    .where(and(eq(monthlyGoalsTable.userId, req.session.userId!), eq(monthlyGoalsTable.month, month), eq(monthlyGoalsTable.year, year)))
+    .where(and(eq(monthlyGoalsTable.userId, req.userId), eq(monthlyGoalsTable.month, month), eq(monthlyGoalsTable.year, year)))
     .orderBy(monthlyGoalsTable.createdAt);
   res.json(goals);
 });
@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
   }
   const [goal] = await db.insert(monthlyGoalsTable).values({
     ...parsed.data,
-    userId: req.session.userId!,
+    userId: req.userId,
     subject: parsed.data.subject ?? "Custom",
     priority: parsed.data.priority ?? "medium",
   }).returning();
@@ -48,7 +48,7 @@ router.patch("/:id/toggle", async (req, res) => {
     res.status(400).json({ error: "Invalid params" });
     return;
   }
-  const [existing] = await db.select().from(monthlyGoalsTable).where(and(eq(monthlyGoalsTable.id, parsed.data.id), eq(monthlyGoalsTable.userId, req.session.userId!)));
+  const [existing] = await db.select().from(monthlyGoalsTable).where(and(eq(monthlyGoalsTable.id, parsed.data.id), eq(monthlyGoalsTable.userId, req.userId)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;
@@ -72,7 +72,7 @@ router.patch("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid body" });
     return;
   }
-  const [existing] = await db.select().from(monthlyGoalsTable).where(and(eq(monthlyGoalsTable.id, parsedParams.data.id), eq(monthlyGoalsTable.userId, req.session.userId!)));
+  const [existing] = await db.select().from(monthlyGoalsTable).where(and(eq(monthlyGoalsTable.id, parsedParams.data.id), eq(monthlyGoalsTable.userId, req.userId)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;
@@ -91,7 +91,7 @@ router.delete("/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid params" });
     return;
   }
-  const [existing] = await db.select().from(monthlyGoalsTable).where(and(eq(monthlyGoalsTable.id, parsed.data.id), eq(monthlyGoalsTable.userId, req.session.userId!)));
+  const [existing] = await db.select().from(monthlyGoalsTable).where(and(eq(monthlyGoalsTable.id, parsed.data.id), eq(monthlyGoalsTable.userId, req.userId)));
   if (!existing) {
     res.status(404).json({ error: "Not found" });
     return;

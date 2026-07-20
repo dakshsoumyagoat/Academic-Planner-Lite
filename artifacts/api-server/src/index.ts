@@ -1,5 +1,6 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { initDefaultUser } from "./middlewares/default-user";
 
 const rawPort = process.env["PORT"];
 
@@ -14,6 +15,9 @@ const port = Number(rawPort);
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
+
+// Ensure the single default user exists (creates + seeds if first run)
+await initDefaultUser();
 
 app.listen(port, (err) => {
   if (err) {

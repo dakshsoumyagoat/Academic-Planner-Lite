@@ -19,7 +19,7 @@ async function getOrCreateSettings(userId: number) {
 }
 
 router.get("/", async (req, res) => {
-  const settings = await getOrCreateSettings(req.session.userId!);
+  const settings = await getOrCreateSettings(req.userId);
   res.json(settings);
 });
 
@@ -29,7 +29,7 @@ router.patch("/", async (req, res) => {
     res.status(400).json({ error: "Invalid body" });
     return;
   }
-  const settings = await getOrCreateSettings(req.session.userId!);
+  const settings = await getOrCreateSettings(req.userId);
   const [updated] = await db.update(settingsTable).set(parsed.data).where(eq(settingsTable.id, settings.id)).returning();
   res.json(updated);
 });

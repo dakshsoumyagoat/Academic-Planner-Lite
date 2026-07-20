@@ -13,10 +13,8 @@ import Search from "@/pages/search";
 import Settings from "@/pages/settings";
 import MonthlyGoals from "@/pages/monthly-goals";
 import Syllabus from "@/pages/syllabus";
-import Login from "@/pages/login";
 import { useGetSettings, getGetSettingsQueryKey } from "@workspace/api-client-react";
 import { applyAccentColor } from "@/lib/accent";
-import { AuthProvider, useAuth } from "@/lib/auth";
 
 const queryClient = new QueryClient();
 
@@ -50,31 +48,6 @@ function ThemeAndAccentInit() {
   return null;
 }
 
-function AppInner() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Login />;
-  }
-
-  return (
-    <>
-      <ThemeAndAccentInit />
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-        <Router />
-      </WouterRouter>
-    </>
-  );
-}
-
 function App() {
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -83,10 +56,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AuthProvider>
-          <AppInner />
-          <Toaster />
-        </AuthProvider>
+        <ThemeAndAccentInit />
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <Router />
+        </WouterRouter>
+        <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
   );

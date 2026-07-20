@@ -5,7 +5,7 @@ import { eq, and, gte, lte } from "drizzle-orm";
 const router = Router();
 
 router.get("/", async (req, res) => {
-  const userId = req.session.userId!;
+  const userId = req.userId;
   const today = new Date().toISOString().split("T")[0];
 
   const endOfWeek = new Date();
